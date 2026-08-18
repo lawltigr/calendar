@@ -128,4 +128,19 @@ def session_book(session_id):
 @main_bp.route("/sessions/<int:session_id>/cancel", methods=["POST"])
 @login_required
 def session_cancel(session_id):
-    pass
+    s = CourseSession.query.get_or_404(session_id)
+    booking = s.user_booking(current_user.id)
+    if not booking:
+        flash("You don't have active bookings for this class.", "info")
+        return redirect(url_for("main.session_detail", session_id = session_id))
+    booking.status = "cancelled"
+    db.session.commit()
+    flash("Booking cancelled.", "info")
+    return redirect(url_for("main.session_detail", session_id = session_id))
+
+@main_bp.route("/my-bookings")
+@login_required
+def my_bookings():
+    bookings = (
+        Booking.query.filter_by(user_id=current_user.id, status="active").join(CourseSession).order_by(CourseSession.start_time).all()
+    )
