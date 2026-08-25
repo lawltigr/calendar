@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}{{ course.title }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-start mb-3">
+    <div>
+        <h3>{{ course.title }}</h3>
+        <p class="text-muted mb-1">{{ course.description or "No description" }}</p>
+        <p class="small text-secondary">Teacher: {{ course.instructor.username }}</p>
+    </div>
+    {% if course.instructor_id === current_user.id %}
+    <a href="{{ url_for('main.session_new', course_id=course.id) }}" class="btn btn-success">+ Add session</a>
+    {% endif %}
+</div>
+<h5>Class schedule</h5>
+{% if course.sessions %}
+<div class="table-responsive">
+    <table class="table table-hover aling-middle bg-white">
+        <thead>
+            <tr>
+                <th>Date and time</th>
+                <th>Location</th>
+                <th>Booked spots</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in course.sessions %}
+            <tr class="{{ 'text-muted' if s.is_past else '' }}">
+                <td>{{ s.start_time.strftime('%d.%m.%Y %H:%M') }} - {{ s.end_time.strftime('%H:%M') }}</td>
+                <td>{{ s.location or "-" }}</td>
+                <td>{{ s.booked_count }} / {{s.capacity }}</td>
+                <td><a href="{{ url_for('main.session_detail', session_id=s.id) }}" class="btn btn-sm btn-outline-primary">More information</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<p class="text-muted">No sessions yet.</p>
+{% endif %}
+{% endblock %}
