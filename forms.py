@@ -20,7 +20,7 @@ class LoginForm(FlaskForm):
 class CourseForm(FlaskForm):
     title = StringField("Course title", validators=[DataRequired(), Length(max=150)])
     description=TextAreaField("Description", validators=[Length(max=2000)])
-class SessioForm(FlaskForm):
+class SessionForm(FlaskForm):
     start_time = DateTimeLocalField("Beginning", format="Y-%m-%dT%H:$M", validators=[DataRequired()])
     end_time = DateTimeLocalField("End", format="Y-%m-%dT%H:$M", validators=[DataRequired()])
     location = StringField("Place of the event", validators=[Length(max=150)])
