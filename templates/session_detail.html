@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}{{ s.course.title }} - session{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h3 class="card-title">{{ s.course.title }}</h3>
+                <p class="text-muted">{{ s.course.description }}</p>
+                <hr>
+                <p><strong>Date and time:</strong> {{ s.start_time.strftime('%d.%m.%Y %H:%M') }} - {{ s.end_time.strftime('%d.%m.%Y %H:%M') }}</p>
+                <p><strong>Location:</strong> {{ s.location or "no information" }}</p>
+                <p><strong>Available spots:</strong> {{ s.spots_left }} from {{ s.capacity }}</p>
+                <p><strong>Instructor:</strong> {{ s.course.instructor.username }}</p>
+
+                {% if s.is_past %}
+                <div class="alert alert-secondary">This session already passed.</div>
+                {% elif my_booking %}
+                <div class="alert alert-success">You are signed up for this session!</div>
+                <form action="{{url_for('main.session_cancel', session_id=s.id) }}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-outline-danger">Cancel</button>
+                </form>
+                {% elif s.is_full %}
+                <div class="alert alert-danger">NO available spots.</div>
+                {% else %}
+                <form action="{{ url_for('main.session_book', session_id=s.id) }}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-outline-primary">Sign up</button>
+                </form>
+                {% endif %}
+                <a href="{{ url_for('main.course_detail', course_id=s.course.id) }}" class="btn btn-link mt-2">Back to course</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
