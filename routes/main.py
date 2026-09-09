@@ -126,7 +126,7 @@ def session_book(session_id):
             "danger",
         )
         return redirect(url_for("main.session_detail", session_id=session_id))
-    Booking = Booking(session_id=s.id, user_id=current_user.id, status="active")
+    booking = Booking(session_id=s.id, user_id=current_user.id, status="active")
     db.session.add(booking)
     db.session.commit()
     flash("You successfully signed up for the class!", "success")

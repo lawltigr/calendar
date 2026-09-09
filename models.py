@@ -39,26 +39,26 @@ class CourseSession(db.Model):
     capacity = db.Column(db.Integer, nullable=False, default=10)
     bookings = db.relationship("Booking", backref="session", lazy=True, cascade="all, delete-orphan")
 
-@property
-def active_bookings(self):
-    return [b for b in self.bookings if b.status == "active"]
-@property
-def booked_count(self) -> int:
-    return len(self.active_bookings)
-@property
-def spots_left(self) -> int:
-    return max(self.capacity - self.booked_count, 0)
-@property
-def is_full(self) -> bool:
-    return self.spots_left <=0
-@property
-def is_past(self) -> bool:
-    return self.start_time < datetime.utcnow()
-def user_booking(self, user_id):
-    for b in self.bookings:
-        if b.user_id == user_id and b.status == "active":
-            return b
-    return None
+    @property
+    def active_bookings(self):
+        return [b for b in self.bookings if b.status == "active"]
+    @property
+    def booked_count(self) -> int:
+        return len(self.active_bookings)
+    @property
+    def spots_left(self) -> int:
+        return max(self.capacity - self.booked_count, 0)
+    @property
+    def is_full(self) -> bool:
+        return self.spots_left <=0
+    @property
+    def is_past(self) -> bool:
+        return self.start_time < datetime.utcnow()
+    def user_booking(self, user_id):
+        for b in self.bookings:
+            if b.user_id == user_id and b.status == "active":
+                return b
+        return None
     
 class Booking(db.Model):
     __tablename__ = "bookings"
