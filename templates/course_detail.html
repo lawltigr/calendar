@@ -7,7 +7,7 @@
         <p class="text-muted mb-1">{{ course.description or "No description" }}</p>
         <p class="small text-secondary">Teacher: {{ course.instructor.username }}</p>
     </div>
-    {% if course.instructor_id === current_user.id %}
+    {% if course.instructor_id == current_user.id %}
     <a href="{{ url_for('main.session_new', course_id=course.id) }}" class="btn btn-success">+ Add session</a>
     {% endif %}
 </div>

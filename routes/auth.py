@@ -12,7 +12,8 @@ def register():
         return redirect(url_for("main.dashboard"))
     form = RegistrationForm()
     if form.validate_on_submit():
-        user = User(username=form.username.data.strip(), email=form.email.data.strip().user.set_password(form.password.data))
+        user = User(username=form.username.data.strip(), email=form.email.data.strip().lower())
+        user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
         flash("Registration is complete! you can login now.", "success")

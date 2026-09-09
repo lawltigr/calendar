@@ -25,9 +25,9 @@
                         {% for error in form.password.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
                     </div>
                     <div class="mb-3">
-                        {{ form.confirmPassword.label(class="form-label") }}
-                        {{ form.confirmPassword(class="form-control") }}
-                        {% for error in form.confirmPassword.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+                        {{ form.confirm_password.label(class="form-label") }}
+                        {{ form.confirm_password(class="form-control") }}
+                        {% for error in form.confirm_password.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
                     </div>
                     <button type="submit" class="btn btn-primary w-100">Register</button>
                 </form>

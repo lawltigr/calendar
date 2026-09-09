@@ -93,6 +93,13 @@ def session_new(course_id):
         return redirect(url_for("main.course_detail", course_id=course.id))
     return render_template("session_form.html", form=form, course=course)
 
+@main_bp.route("/sessions/<int:session_id>")
+@login_required
+def session_detail(session_id):
+    session_obj = CourseSession.query.get_or_404(session_id)
+    my_booking = session_obj.user_booking(current_user.id)
+    return render_template("session_detail.html", s=session_obj, my_booking=my_booking)
+
 @main_bp.route("/sessions/<int:session_id>/book", methods=["POST"])
 @login_required
 def session_book(session_id):
