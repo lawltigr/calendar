@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block title %}My bookings{% endblock %}
+{% block content %}
 <h3 class="mb-3">My bookings</h3>
 {% if bookings %}
 <div class="table-responsive">
@@ -14,7 +15,7 @@
         </thead>
         <tbody>
             {% for b in bookings %}
-            <tr class="{{ 'text-muted' if b.sessions.is_past else '' }}">
+            <tr class="{{ 'text-muted' if b.session.is_past else '' }}">
                 <td>{{ b.session.course.title }}</td>
                 <td>{{ b.session.start_time.strftime('%d.%m.%Y %H:%M') }}</td>
                 <td>{{ b.session.location or "-" }}</td>

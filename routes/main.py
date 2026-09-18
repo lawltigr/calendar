@@ -41,7 +41,7 @@ def api_sessions():
                 "color": color,
             }
         )
-        return jsonify(events)
+    return jsonify(events)
 
 @main_bp.route("/courses")
 @login_required
@@ -151,3 +151,4 @@ def my_bookings():
     bookings = (
         Booking.query.filter_by(user_id=current_user.id, status="active").join(CourseSession).order_by(CourseSession.start_time).all()
     )
+    return render_template("my_bookings.html", bookings=bookings, now=datetime.utcnow())
