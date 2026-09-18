@@ -17,10 +17,17 @@
                 <div class="alert alert-secondary">This session already passed.</div>
                 {% elif my_booking %}
                 <div class="alert alert-success">You are signed up for this session!</div>
-                <form action="{{url_for('main.session_cancel', session_id=s.id) }}" method="POST">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <button type="submit" class="btn btn-outline-danger">Cancel</button>
-                </form>
+                    {% if s.can_cancel %}
+                        <form action="{{url_for('main.session_cancel', session_id=s.id) }}" method="POST">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-outline-danger">Cancel</button>
+                        </form>
+                        <p class="small text-muted mt-2">Cancellation available until {{ s.cancellation_deadline.strftime('%d.%m.%Y %H:%M') }}</p>
+                    {% else %}
+                        <div class="alert alert-warning">
+                            Cancellation is no longer available (allowed up to {{ s.CANCELLATION_DEADLINE_HOURS }} hours before the class).
+                        </div>
+                    {% endif %}
                 {% elif s.is_full %}
                 <div class="alert alert-danger">NO available spots.</div>
                 {% else %}

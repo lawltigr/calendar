@@ -2,6 +2,7 @@ from datetime import datetime
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from extensions import db
+from datetime import datetime, timedelta
 
 class User(UserMixin, db.Model):
     __tablename__ = "users"
@@ -31,6 +32,7 @@ class Course(db.Model):
 class CourseSession(db.Model):
     """Course session on the exact time/date."""
     __tablename__ = "course_sessions"
+    CANCELLATION_DEADLINE_HOURS = 2
     id = db.Column(db.Integer, primary_key=True)
     course_id = db.Column(db.Integer, db.ForeignKey("courses.id"), nullable=False)
     start_time = db.Column(db.DateTime, nullable=False, index=True)
@@ -59,6 +61,12 @@ class CourseSession(db.Model):
             if b.user_id == user_id and b.status == "active":
                 return b
         return None
+    @property
+    def cancellation_deadline(self):
+        return self.start_time - timedelta(hours=self.CANCELLATION_DEADLINE_HOURS)
+    @property
+    def can_cancel(self) -> bool:
+        return datetime.utcnow() < self.cancellation_deadline
     
 class Booking(db.Model):
     __tablename__ = "bookings"

@@ -140,6 +140,10 @@ def session_cancel(session_id):
     if not booking:
         flash("You don't have active bookings for this class.", "info")
         return redirect(url_for("main.session_detail", session_id = session_id))
+    
+    if not s.can_cancel:
+        flash(f"Cancellation is only allowed up to {s.CANCELLATION_DEADLINE_HOURS} hours " f"before the class starts.", "danger")
+        return redirect(url_for("main.session_detail", session_id=session_id))
     booking.status = "cancelled"
     db.session.commit()
     flash("Booking cancelled.", "info")
