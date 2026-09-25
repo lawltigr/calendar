@@ -32,7 +32,7 @@ class Course(db.Model):
 class CourseSession(db.Model):
     """Course session on the exact time/date."""
     __tablename__ = "course_sessions"
-    CANCELLATION_DEADLINE_HOURS = 2
+    CANCELLATION_DEADLINE_HOURS = 1
     id = db.Column(db.Integer, primary_key=True)
     course_id = db.Column(db.Integer, db.ForeignKey("courses.id"), nullable=False)
     start_time = db.Column(db.DateTime, nullable=False, index=True)
