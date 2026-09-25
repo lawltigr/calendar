@@ -10,7 +10,7 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False, index=True)
     email = db.Column(db.String(120), unique=True, nullable=False, index=True)
     password_hash = db.Column(db.String(255), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.now)
     courses = db.relationship("Course", backref="instructor", lazy=True)
     bookings = db.relationship("Booking", backref="user", lazy=True)
     def set_password(self, password: str) -> None:
@@ -24,7 +24,7 @@ class Course(db.Model):
     title = db.Column(db.String(150), nullable=False)
     description = db.Column(db.Text, nullable=True)
     instructor_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.now)
 
     sessions = db.relationship(
         "CourseSession", backref="course", lazy=True, cascade="all, delete-orphan", order_by="CourseSession.start_time",
@@ -55,7 +55,7 @@ class CourseSession(db.Model):
         return self.spots_left <=0
     @property
     def is_past(self) -> bool:
-        return self.start_time < datetime.utcnow()
+        return self.start_time < datetime.now()
     def user_booking(self, user_id):
         for b in self.bookings:
             if b.user_id == user_id and b.status == "active":
@@ -66,7 +66,7 @@ class CourseSession(db.Model):
         return self.start_time - timedelta(hours=self.CANCELLATION_DEADLINE_HOURS)
     @property
     def can_cancel(self) -> bool:
-        return datetime.utcnow() < self.cancellation_deadline
+        return datetime.now() < self.cancellation_deadline
     
 class Booking(db.Model):
     __tablename__ = "bookings"
@@ -74,4 +74,4 @@ class Booking(db.Model):
     session_id = db.Column(db.Integer, db.ForeignKey("course_sessions.id"), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     status = db.Column(db.String(20), nullable=False, default="active") # active| cancelled
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.now)
