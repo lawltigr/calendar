@@ -1,6 +1,6 @@
 from datetime import datetime
 from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify, current_app
-from email_utils import send_booking_confirmation
+from email_utils import send_booking_confirmation, send_cancellation_notice
 from flask_login import login_required, current_user
 from extensions import db
 from models import Course, CourseSession, Booking
@@ -153,7 +153,12 @@ def session_cancel(session_id):
         return redirect(url_for("main.session_detail", session_id=session_id))
     booking.status = "cancelled"
     db.session.commit()
+    try:
+        send_cancellation_notice(current_user, s)
+    except Exception as e:
+        current_app.logger.error(f"Failed to send cancellation email: {e}")
     flash("Booking cancelled.", "info")
+
     return redirect(url_for("main.session_detail", session_id = session_id))
 
 @main_bp.route("/my-bookings")
