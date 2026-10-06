@@ -1,5 +1,6 @@
 from datetime import datetime
-from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
+from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify, current_app
+from email_utils import send_booking_confirmation
 from flask_login import login_required, current_user
 from extensions import db
 from models import Course, CourseSession, Booking
@@ -129,7 +130,13 @@ def session_book(session_id):
     booking = Booking(session_id=s.id, user_id=current_user.id, status="active")
     db.session.add(booking)
     db.session.commit()
-    flash("You successfully signed up for the class!", "success")
+    try:
+        send_booking_confirmation(current_user, s)
+        flash("You successfully signed up for the class!", "success")
+    except Exception as e:
+        current_app.logger.error(f"Failed to send booking email: {e}")
+        flash("You signed up, but we couldn't send the confirmation email.", "warning")
+
     return redirect(url_for("main.session_detail", session_id=session_id))
 
 @main_bp.route("/sessions/<int:session_id>/cancel", methods=["POST"])
