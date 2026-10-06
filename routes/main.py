@@ -5,6 +5,7 @@ from flask_login import login_required, current_user
 from extensions import db
 from models import Course, CourseSession, Booking
 from forms import CourseForm, SessionForm
+from decorators import admin_required
 main_bp = Blueprint("main", __name__)
 
 @main_bp.route("/")
@@ -168,3 +169,9 @@ def my_bookings():
         Booking.query.filter_by(user_id=current_user.id, status="active").join(CourseSession).order_by(CourseSession.start_time).all()
     )
     return render_template("my_bookings.html", bookings=bookings, now=datetime.now())
+
+@main_bp.route("/admin/courses")
+@admin_required
+def admin_courses():
+    courses = Course.query.order_by(Course.created_at.desc()).all()
+    return render_template("admin_courses.html", courses=courses)
