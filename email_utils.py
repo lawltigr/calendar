@@ -30,3 +30,18 @@ def send_cancellation_notice(user, session_obj):
         ),
     )
     mail.send(msg)
+
+def send_course_deleted_notice(username, email, course_title, session_times):
+    lines = "\n".join(f"- {t.strftime('%d.%m.%Y %H:%M')}" for t in session_times)
+    msg = Message(
+        subject=f"Course removed: {course_title}",
+        recipients=[email],
+        body=(
+            f"Hi {username},\n\n"
+            f"The course '{course_title} was removed by an administrator,"
+            f"so your bookings for these sessions were cancelled:\n"
+            f"{lines}\n\n"
+            f"We apologize for the inconvenience."
+        ),
+    )
+    mail.send(msg)

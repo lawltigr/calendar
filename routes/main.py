@@ -1,6 +1,6 @@
 from datetime import datetime
 from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify, current_app
-from email_utils import send_booking_confirmation, send_cancellation_notice
+from email_utils import send_booking_confirmation, send_cancellation_notice, send_course_deleted_notice
 from flask_login import login_required, current_user
 from extensions import db
 from models import Course, CourseSession, Booking
@@ -181,7 +181,27 @@ def admin_courses():
 def admin_course_delete(course_id):
     course = Course.query.get_or_404(course_id)
     title = course.title
+    notices = {}
+    for s in course.sessions:
+        if s.is_past:
+            continue
+        for b in s.active_bookings:
+            entry = notices.setdefault(
+                b.user_id,
+                {"username": b.user.username, "email": b.user.email, "times": []},
+            )
+            entry["times"].append(s.start_time)
     db.session.delete(course)
     db.session.commit()
-    flash(f"Course '{title}' deleted.", "info")
+    sent, failed = 0, 0
+    for entry in notices.values():
+        try:
+            send_course_deleted_notice(entry["username"], entry["email"], title, entry["times"])
+            sent += 1
+        except Exception as e:
+            failed += 1
+            current_app.logger.error(f"Failed to send course-removed email to {entry['email']}: {e}")
+    flash(f"Course '{title}' deleted. Notified: {sent}.", "info")
+    if failed:
+        flash(f"{failed} notification(s) could not be sent, see server log.", "warning")
     return redirect(url_for("main.admin_courses"))
