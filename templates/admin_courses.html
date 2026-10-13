@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Admin: courses{% endblock %}
+{% block content %}
+<h3 class="mb-3">Course moderation</h3>
+{% if courses %}
+    <div class="table-responsive">
+        <table class="table table-hover align-middle bg-white">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Instructor</th>
+                    <th>Sessions</th>
+                    <th>Created</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for course in courses %}
+                <tr>
+                    <td>
+                        <a href="{{ url_for('main.course_detail', course_id=course.id) }}">{{ course.title }}</a>
+                    </td>
+                    <td>{{ course.instructor.username }}</td>
+                    <td>{{ course.sessions|length }}</td>
+                    <td>{{ course.created_at.strftime('%d.%m.%Y') }}</td>
+                    <td>
+                        <form method="post"
+                            action="{{ url_for('main.admin_course_delete', course_id=course.id) }}"
+                            onsubmit="return confirm('Delete thi course with all its sessions and bookings?');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <p class="text-muted">No courses yet.</p>
+{% endif %}
+{% endblock %}

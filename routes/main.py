@@ -175,3 +175,13 @@ def my_bookings():
 def admin_courses():
     courses = Course.query.order_by(Course.created_at.desc()).all()
     return render_template("admin_courses.html", courses=courses)
+
+@main_bp.route("/admin/courses/<int:course_id>/delete", methods=["POST"])
+@admin_required
+def admin_course_delete(course_id):
+    course = Course.query.get_or_404(course_id)
+    title = course.title
+    db.session.delete(course)
+    db.session.commit()
+    flash(f"Course '{title}' deleted.", "info")
+    return redirect(url_for("main.admin_courses"))

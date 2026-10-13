@@ -9,3 +9,4 @@ def admin_required(view_func):
         if not current_user.is_admin:
             abort(403)
         return view_func(*args, **kwargs)
+    return wrapper
